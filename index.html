@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Do You Like Me?</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffcccc,
+        #ffcccc 10px,
+        #ffe6e6 10px,
+        #ffe6e6 20px
+      );
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #e6005c;
+      text-shadow: 1px 1px #fff;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .yes {
+      background-color: #ff4d4d;
+      color: white;
+    }
+
+    .no {
+      background-color: #ccc;
+    }
+
+    .yes:hover {
+      background-color: #e6005c;
+    }
+
+    .no:hover {
+      background-color: #999;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #e6005c;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: floatUp 2s linear forwards;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(45deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-200px) rotate(45deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Do you like me?</h1>
+  <p>From Vaibhav</p>
+
+  <div class="buttons">
+    <button class="yes" onclick="respond('Yes')">Yes</button>
+    <button class="no" onclick="respond('No')">No</button>
+  </div>
+
+  <div class="result" id="response"></div>
+
+  <script>
+    function respond(answer) {
+      // 1. Show response on screen
+      document.getElementById('response').innerText = 'You chose: ' + answer;
+
+      // 2. Trigger heart animation if "Yes"
+      if (answer === 'Yes') {
+        for (let i = 0; i < 30; i++) createHeart();
+      }
+
+      // 3. Send answer to Formspree
+      fetch("https://formspree.io/f/xnndvqnq", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "She clicked: " + answer })
+      }).then(() => {
+        console.log("Response sent!");
+      }).catch(err => {
+        console.error("Error sending to Formspree:", err);
+      });
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.top = Math.random() * window.innerHeight + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+  </script>
+
+</body>
+</html>
